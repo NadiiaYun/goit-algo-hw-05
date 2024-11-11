@@ -6,7 +6,7 @@ import re
 
 def generator_numbers(text: str):  
     # ідентифікування всіх дійсних чисел
-    pattern = r"\d+\.\d+"
+    pattern = r"\s\d+\.\d+\s"
     matches = re.findall(pattern, text)
 
     for match in matches:        
