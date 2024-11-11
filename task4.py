@@ -8,58 +8,28 @@ def parse_input(user_input):
 def input_error(func):
     @wraps(func)
     def inner(*args, **kwargs):
-        try:
-            #print(f"Викликається функція: {func.__name__}: {args}")
+        try:            
             return func(*args, **kwargs)
         
-        except ValueError:
-            msg = "Enter 2 arguments for the command. "
-
-            if func.__name__ == "add_contact":
-                msg += "The right command format: add name phone"
-
-            if func.__name__ == "change_contact":
-                msg += "The right command format: change name phone"            
-
-            return msg
+        except ValueError:  
+            return "Enter the argument for the command"
         
         except KeyError:               
             return f'There is no contact with the name "{args[0][0]}"'
 
         except IndexError:            
-            return "Enter just 1 argument for the command. The right command format: phone name"
+            return "Enter 1 argument (name) for the command"        
         
-        except TypeError:
-            return 'The name cannot be a number'
-        
-        except RuntimeError:
-            msg = "RuntimeError"
-            if func.__name__ == "add_contact":
-                msg = f'Contact with the name "{args[0][0]}" already exists'
-            return msg
     return inner
 
 @input_error
-def add_contact(args: list, contacts: dict) -> str: 
-    if len(args) != 2:
-        raise ValueError
-        
-    name, phone = args   
-    
-    if name.isdigit():
-        raise TypeError
-    
-    if name in contacts: 
-        raise RuntimeError
-    else: 
-        contacts[name] = phone            
-        return "Contact added"    
+def add_contact(args, contacts):           
+    name, phone = args      
+    contacts[name] = phone            
+    return "Contact added"
 
 @input_error
 def change_contact(args, contacts):
-    if len(args) != 2:
-        raise ValueError
-    
     name, phone = args
     
     if name in contacts:
@@ -73,19 +43,14 @@ def show_phone(args, contacts):
     if len(args) != 1:
         raise IndexError
     
-    name = args[0]   
+    name = args[0]
 
     if name in contacts:
         phone = contacts.get(name) 
-        return f'The phone number for the contact "{name}" is {phone}'
+        return f'{name}: {phone}'
     else:
-        raise KeyError
-    
-def show_all(contacts):
-    for key, value in contacts.items():
-        print(key+":", value)
-    #print(contacts)
-    return "All contacts showed"
+        raise KeyError    
+
 
 def main():
     contacts = {}
@@ -102,7 +67,7 @@ def main():
             print("How can I help you?")
 
         elif command == "add":
-            print(add_contact(args,contacts))
+            print(add_contact(args,contacts))            
 
         elif command == "change":
             print(change_contact(args,contacts))
@@ -111,7 +76,9 @@ def main():
             print(show_phone(args,contacts))
 
         elif command == "all":
-            print(show_all(contacts))
+            for key, value in contacts.items():
+                print(key+":", value)
+            print("All contacts showed")
 
         else:
             print("Invalid command.")
